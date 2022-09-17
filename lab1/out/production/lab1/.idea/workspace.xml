@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ef0be936-61ba-4c22-b848-3727fea5d857" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/GetEnvironmentVariables.java" beforeDir="false" afterPath="$PROJECT_DIR$/GetEnvironmentVariables.java" afterDir="false" />
-    </list>
+    <list default="true" id="ef0be936-61ba-4c22-b848-3727fea5d857" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -28,9 +26,16 @@
     &quot;last_opened_file_path&quot;: &quot;/Users/wangzihao/Desktop/cs61b/sp21-s135/lab1&quot;
   }
 }</component>
-  <component name="RunManager" selected="Application.CheckLabConfig">
+  <component name="RunManager" selected="Application.Collatz">
     <configuration name="CheckLabConfig" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="CheckLabConfig" />
+      <module name="lab1" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Collatz" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Collatz" />
       <module name="lab1" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -52,6 +57,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.Collatz" />
         <item itemvalue="Application.CheckLabConfig" />
         <item itemvalue="Application.GetEnvironmentVariables" />
         <item itemvalue="Application.HelloNumbers" />
