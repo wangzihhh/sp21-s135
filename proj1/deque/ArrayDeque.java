@@ -63,6 +63,12 @@ public class ArrayDeque<T> {
 
     // Resize the length of items in ArrayDeque.
     public void resize(int capacity) {
+        if (isEmpty()) {
+            items = (T[]) new Object[8];
+            nextfront = 3;
+            nextback = 4;
+            return;
+        }
         T[] temp = (T[]) new Object[capacity];
         for (int i = 0; i < size; i += 1) {
             temp[i] = items[mod(nextfront + 1 + i, items.length)];
