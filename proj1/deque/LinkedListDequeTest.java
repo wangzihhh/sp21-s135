@@ -1,6 +1,9 @@
 package deque;
 
 import org.junit.Test;
+
+import java.util.Optional;
+
 import static org.junit.Assert.*;
 
 
@@ -135,5 +138,99 @@ public class LinkedListDequeTest {
         }
 
         */
+    }
+
+    // the following test are created by myself
+    @Test
+    public void sizeTest() {
+        LinkedListDeque<Integer> testDeque = new LinkedListDeque<>();
+        testDeque.addFirst(10);
+        testDeque.addFirst(12);
+        testDeque.addLast(15);
+        assertEquals(3, testDeque.size());
+    }
+
+    @Test
+    public void isEmptyTest() {
+        LinkedListDeque<Integer> testDeque = new LinkedListDeque<>();
+
+        assertTrue(testDeque.isEmpty());
+
+        testDeque.addLast(10);
+        testDeque.addLast(2);
+
+        assertTrue(! testDeque.isEmpty());
+    }
+
+    @Test
+    public void sizemethodTest() {
+        LinkedListDeque<Integer> testDeque = new LinkedListDeque<>();
+        testDeque.addLast(10);
+        testDeque.addLast(5);
+        testDeque.addLast(3);
+        assertEquals(3, testDeque.size());
+    }
+
+
+
+    @Test
+    public void removeFirstTest() {
+        LinkedListDeque<Integer> testDeque = new LinkedListDeque<>();
+        testDeque.addLast(1);
+        testDeque.addLast(2);
+        testDeque.addLast(3);
+        testDeque.addLast(4);
+
+        int removeVal = testDeque.removeLast();
+        assertEquals(4, removeVal);
+        assertEquals(3, testDeque.size());
+    }
+
+    @Test
+    public void getTest() {
+        LinkedListDeque<Integer> testDeque = new LinkedListDeque<>();
+        testDeque.addLast(4);
+        testDeque.addLast(5);
+        testDeque.addLast(6);
+
+        int first = testDeque.get(0);
+        assertEquals(4, first);
+
+        int second = testDeque.get(1);
+        assertEquals(5, second);
+
+        int third = testDeque.get(2);
+        assertEquals(6, third);
+
+        Object shouldnull = testDeque.get(5);
+        assertEquals(null, shouldnull);
+    }
+
+    @Test
+    public void getRecursiveTest() {
+        LinkedListDeque<Integer> testDeque = new LinkedListDeque<>();
+        testDeque.addLast(10);
+        testDeque.addLast(11);
+        testDeque.addLast(12);
+
+        int first = testDeque.getRecursive(0);
+        assertEquals(10, first);
+
+        int second = testDeque.getRecursive(1);
+        assertEquals(11, second);
+
+        int third = testDeque.get(2);
+        assertEquals(12, third);
+    }
+
+    @Test
+    public void printDequeTest() {
+        LinkedListDeque<Integer> testDeque = new LinkedListDeque<>();
+        testDeque.addLast(1);
+        testDeque.addLast(2);
+        testDeque.addLast(3);
+        testDeque.addLast(4);
+
+        testDeque.printDeque();
     }
 }
