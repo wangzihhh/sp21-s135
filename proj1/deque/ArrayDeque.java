@@ -95,7 +95,7 @@ public class ArrayDeque<T> {
      */
 
     public boolean needSmaller() {
-        return (items.length / size) > 4;
+        return items.length  > 4 * size;
     }
 
     public T removeFirst() {
