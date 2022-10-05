@@ -1,5 +1,8 @@
 package deque;
-public class ArrayDeque<T> {
+
+import java.util.Iterator;
+
+public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     private int size;
     private int nextfront = 6;
     private int nextback = 7;
@@ -42,10 +45,6 @@ public class ArrayDeque<T> {
         return size;
     }
 
-    public boolean isEmpty() {
-        return size() == 0;
-    }
-
     /** Return true if the ArrayDeque is full, not any space available
      *  Otherwise false
      *  This method is used to check whether we should call resize to enlarge
@@ -54,7 +53,7 @@ public class ArrayDeque<T> {
         return size() == items.length;
     }
 
-    private static int mod(int a, int b) {
+    public int mod(int a, int b) {
         if ((a % b) < 0) {
             return a % b + b;
         }
@@ -147,5 +146,48 @@ public class ArrayDeque<T> {
             }
         }
         System.out.println();
+    }
+
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        if (! (o instanceof Deque)) {
+            return false;
+        }
+        Deque<T> cmpDeque = (Deque<T>) o;
+        if (size() != cmpDeque.size()) {
+            return false;
+        }
+        if (isEmpty() && cmpDeque.isEmpty()) {
+            return true;
+        }
+        for (int i = 0; i < size(); i += 1) {
+            if (! get(i).equals(cmpDeque.get(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public Iterator<T> iterator() {
+        return new ArrayDeque.dequeIterator();
+    }
+
+    private class dequeIterator implements Iterator<T>{
+        private int wispos = 0;
+
+        public boolean hasNext() {
+            return wispos < size;
+        }
+
+        public T next() {
+            T returnVal = get(wispos);
+            wispos += 1;
+            return returnVal;
+        }
     }
 }

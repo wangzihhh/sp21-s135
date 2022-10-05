@@ -1,5 +1,8 @@
 package deque;
-public class LinkedListDeque<T> {
+import java.util.Comparator;
+import java.util.Iterator;
+
+public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
 
     private class StuffNode {
         private T item;
@@ -36,11 +39,6 @@ public class LinkedListDeque<T> {
         sentinel.front.back = new StuffNode(item, sentinel.front, sentinel);
         sentinel.front = sentinel.front.back;
         size += 1;
-    }
-
-    // Return true if LinkedListDeque is empty, false otherwise.
-    public boolean isEmpty() {
-        return (sentinel.back == sentinel);
     }
 
     // Return the number of items in the LinkedListDeque.
@@ -118,5 +116,48 @@ public class LinkedListDeque<T> {
             }
         }
         System.out.println();
+    }
+
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        if (! (o instanceof Deque)) {
+            return false;
+        }
+        Deque<T> cmpDeque = (Deque<T>) o;
+        if (size() != cmpDeque.size()) {
+            return false;
+        }
+        if (isEmpty() && cmpDeque.isEmpty()) {
+            return true;
+        }
+        for (int i = 0; i < size(); i += 1) {
+            if (! get(i).equals(cmpDeque.get(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public Iterator<T> iterator() {
+        return new dequeIterator();
+    }
+
+    private class dequeIterator implements Iterator<T>{
+        private int wispos = 0;
+
+        public boolean hasNext() {
+            return wispos < size;
+        }
+
+        public T next() {
+            T returnVal = get(wispos);
+            wispos += 1;
+            return returnVal;
+        }
     }
 }

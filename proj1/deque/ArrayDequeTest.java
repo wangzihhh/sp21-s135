@@ -51,4 +51,16 @@ public class ArrayDequeTest {
         int getVal = testDeque.get(200);
         assertEquals(100, getVal);
     }
+
+    @Test
+    public void equalsTest() {
+        LinkedListDeque<Integer> Ld = new LinkedListDeque<>();
+        ArrayDeque<Integer> Ad = new ArrayDeque<>();
+        for (int i = 0; i < 100; i += 1) {
+            Ld.addLast(i);
+            Ad.addLast(i);
+        }
+        assertTrue(Ld.equals(Ad));
+        assertTrue(Ad.equals(Ld));
+    }
 }
