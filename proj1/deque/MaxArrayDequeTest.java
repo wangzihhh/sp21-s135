@@ -1,6 +1,9 @@
 package deque;
 import static org.junit.Assert.*;
 import org.junit.Test;
+
+import java.util.Comparator;
+
 public class MaxArrayDequeTest {
     @Test
     public void comparatorTest() {
@@ -18,5 +21,14 @@ public class MaxArrayDequeTest {
 
         Dog testDog2 = dogDeque.max(Dog.getNameComparator());
         assertEquals(d3, testDog2);
+
+        Comparator<Integer> valComparator = new IntComparator();
+        MaxArrayDeque<Integer> intDeque = new MaxArrayDeque<>(valComparator);
+        intDeque.addLast(10);
+        intDeque.addLast(500);
+        intDeque.addLast(1000);
+
+        int testVal = intDeque.max();
+        assertEquals(1000, testVal);
     }
 }
