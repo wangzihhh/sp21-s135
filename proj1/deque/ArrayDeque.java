@@ -19,41 +19,17 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     /** This is a helper method for addLast method
      *  It updates nextback variable when we call addLast
      */
-    public void updateNextback() {
-        if (nextback < items.length - 1) {
-            nextback += 1;
-        }
-        else {
-            nextback = 0;
-        }
-    }
 
-    /** This is a helper method for addFirst method
-     *  It updates nextfront variable when we call addFirst
-     */
-    public void updateNextfront() {
-        if (nextfront > 0) {
-            nextfront -= 1;
-        }
-        else {
-            nextfront = items.length - 1;
-        }
-    }
 
     // Return the number of items in ArrayDeque.
-    public int size() {
-        return size;
-    }
+    public int size() { return size; }
 
     /** Return true if the ArrayDeque is full, not any space available
      *  Otherwise false
      *  This method is used to check whether we should call resize to enlarge
      */
-    public boolean isFull() {
-        return size() == items.length;
-    }
-
-    public int mod(int a, int b) {
+    private boolean isFull() { return size() == items.length; }
+    private int mod(int a, int b) {
         if ((a % b) < 0) {
             return a % b + b;
         }
@@ -61,7 +37,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     }
 
     // Resize the length of items in ArrayDeque.
-    public void resize(int capacity) {
+    private void resize(int capacity) {
         if (isEmpty()) {
             items = (T[]) new Object[8];
             nextfront = 3;
@@ -99,7 +75,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
      * when it returns true, we should resize items to save memory
      */
 
-    public boolean needSmaller() {
+    private boolean needSmaller() {
         return items.length  > 4 * size;
     }
 
@@ -113,7 +89,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         items[currentFront] = null;
         nextfront = currentFront;
         if (needSmaller()) {
-            resize(items.length/2);
+            resize(items.length / 2);
         }
         return removeVal;
     }
@@ -128,13 +104,13 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         items[currentBack] = null;
         nextback = currentBack;
         if (needSmaller()) {
-            resize(items.length/2);
+            resize(items.length / 2);
         }
         return removeVal;
     }
 
     public T get(int index) {
-        return items[mod(nextfront+index+1, items.length)];
+        return items[mod(nextfront + index + 1, items.length)];
     }
 
     public void printDeque() {
@@ -155,7 +131,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         if (o == null) {
             return false;
         }
-        if (! (o instanceof Deque)) {
+        if (!(o instanceof Deque)) {
             return false;
         }
         Deque<T> cmpDeque = (Deque<T>) o;
@@ -166,7 +142,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
             return true;
         }
         for (int i = 0; i < size(); i += 1) {
-            if (! get(i).equals(cmpDeque.get(i))) {
+            if (!get(i).equals(cmpDeque.get(i))) {
                 return false;
             }
         }
@@ -174,10 +150,10 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     }
 
     public Iterator<T> iterator() {
-        return new ArrayDeque.dequeIterator();
+        return new ArrayDeque.DequeIterator();
     }
 
-    private class dequeIterator implements Iterator<T>{
+    private class DequeIterator implements Iterator<T> {
         private int wispos = 0;
 
         public boolean hasNext() {
