@@ -1,4 +1,6 @@
 package deque;
+import edu.princeton.cs.algs4.StdRandom;
+
 import java.util.Comparator;
 import java.util.Iterator;
 
@@ -149,7 +151,6 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
 
     private class dequeIterator implements Iterator<T>{
         private int wispos = 0;
-
         public boolean hasNext() {
             return wispos < size;
         }
