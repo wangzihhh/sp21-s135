@@ -8,7 +8,7 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
         private StuffNode front;
         private StuffNode back;
 
-        public StuffNode(T i, StuffNode f, StuffNode b) {
+        StuffNode(T i, StuffNode f, StuffNode b) {
             item = i;
             front = f;
             back = b;
@@ -22,7 +22,7 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
     public LinkedListDeque() {
         sentinel = new StuffNode(null, null, null);
         sentinel.front = sentinel;
-        sentinel.back =sentinel;
+        sentinel.back = sentinel;
         size = 0;
     }
 
@@ -124,7 +124,7 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
         if (o == null) {
             return false;
         }
-        if (! (o instanceof Deque)) {
+        if (!(o instanceof Deque)) {
             return false;
         }
         Deque<T> cmpDeque = (Deque<T>) o;
@@ -135,7 +135,7 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
             return true;
         }
         for (int i = 0; i < size(); i += 1) {
-            if (! get(i).equals(cmpDeque.get(i))) {
+            if (!get(i).equals(cmpDeque.get(i))) {
                 return false;
             }
         }
@@ -143,10 +143,10 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
     }
 
     public Iterator<T> iterator() {
-        return new dequeIterator();
+        return new DequeIterator();
     }
 
-    private class dequeIterator implements Iterator<T> {
+    private class DequeIterator implements Iterator<T> {
         private int wispos = 0;
         public boolean hasNext() {
             return wispos < size;

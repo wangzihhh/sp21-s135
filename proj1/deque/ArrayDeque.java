@@ -22,13 +22,18 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
 
 
     // Return the number of items in ArrayDeque.
-    public int size() { return size; }
+    public int size() {
+        return size;
+    }
 
     /** Return true if the ArrayDeque is full, not any space available
      *  Otherwise false
      *  This method is used to check whether we should call resize to enlarge
      */
-    private boolean isFull() { return size() == items.length; }
+    private boolean isFull() { 
+        return size() == items.length; 
+    }
+    
     private int mod(int a, int b) {
         if ((a % b) < 0) {
             return a % b + b;
