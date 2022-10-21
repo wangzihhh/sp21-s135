@@ -16,7 +16,7 @@ import static capers.Utils.*;
 public class CapersRepository {
     /** Current Working Directory. */
     static final File CWD = new File(System.getProperty("user.dir"));
-
+    
     /** Main metadata folder. */
     static final File CAPERS_FOLDER = null; // TODO Hint: look at the `join`
                                             //      function in Utils
