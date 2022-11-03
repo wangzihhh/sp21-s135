@@ -20,50 +20,6 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V>{
             left = l;
             right = r;
         }
-
-
-        // The following method are used as static method, but invoke by caller variable
-
-        /** return the node in tree n of key-value pairs whose key is equal to
-         * Key. */
-       private Node get(Node n, K k) {
-           if (n == null) {
-               return null;
-           }
-           int cmp = k.compareTo(n.key);
-           if (cmp < 0) {
-               return get(n.left, k);
-           }
-           else if (cmp > 0) {
-               return get(n.right, k);
-           }
-           return n;
-       }
-        private Node put(Node n, K k, V v) {
-            if (n == null) {
-                return new Node(k, v, null, null);
-            }
-            int cmp = k.compareTo(n.key);
-            if (cmp < 0) {
-                n.left = put(n.left, k, v);
-            }
-            else if (cmp > 0) {
-                n.right = put(n.right, k, v);
-            }
-            else {
-                n.value = v;
-            }
-            return n;
-        }
-
-        private void printInorder(Node n) {
-            if (n == null) {
-                return;
-            }
-            printInorder(n.left);
-            System.out.print(n.key.toString() + " ");
-            printInorder(n.right);
-        }
     }
 
 
@@ -71,10 +27,6 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V>{
     private int size = 0;
     private Node curTree;
 
-    /** this instance variable has no actual meaning. Only use to call
-     * method. e.g. The method by this variable can be seen as static method of
-     * inner class Node */
-    private Node caller = new Node(null, null, null, null);
 
     /** Using sentinel to construct an empty BSTMap
      *  The actual map starts from the right subtree */
@@ -90,16 +42,17 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V>{
 
     @Override
     public boolean containsKey(K key) {
-        return caller.get(this.curTree, key) != null;
+        Node targetTree = findNode(key, curTree);
+        return (targetTree != null);
     }
 
     @Override
     public V get(K key) {
-        Node lookup = caller.get(curTree, key);
-        if (lookup == null) {
+        Node targetTree = findNode(key, curTree);
+        if (targetTree == null) {
             return null;
         }
-        return lookup.value;
+        return targetTree.value;
     }
 
     @Override
@@ -109,15 +62,14 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V>{
 
     @Override
     public void put(K key, V value) {
-        Node lookup = caller.get(curTree, key);
-        if (lookup == null) {
+        if (!containsKey(key)) {
             size += 1;
         }
-        curTree = caller.put(curTree, key, value);
+        curTree = put(curTree, key, value);
     }
 
     public void printInOrder() {
-        caller.printInorder(this.curTree);
+
     }
     @Override
     public Set<K> keySet() {
@@ -134,10 +86,43 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V>{
         return null;
     }
 
+
     @Override
     public Iterator<K> iterator() {
         throw new UnsupportedOperationException();
     }
 
+    /** return the subNode in the Node whose root equals key */
+    private Node findNode(K key, Node n) {
+        if (n == null) {
+            return null;
+        }
+        int cmp = key.compareTo(n.key);
+        if (cmp == 0) {
+            return n;
+        }
+        else if (cmp < 0) {
+            return findNode(key, n.left);
+        }
+        return findNode(key, n.right);
+    }
+
+    /** put a key-value pair into a Node and return it. */
+    private Node put(Node n, K key, V value) {
+        if (n == null) {
+            return new Node(key, value, null, null);
+        }
+        int cmp = key.compareTo(n.key);
+        if (cmp < 0) {
+            n.left = put(n.left, key, value);
+        }
+        else if (cmp > 0) {
+            n.right = put(n.right, key, value);
+        }
+        else {
+            n.value = value;
+        }
+        return n;
+    }
 
 }
