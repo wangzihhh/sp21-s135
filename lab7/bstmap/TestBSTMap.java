@@ -90,10 +90,15 @@ public class TestBSTMap {
     @Test
     public void printTest() {
         BSTMap<String, Integer> b = new BSTMap<String, Integer>();
-        b.put("h", 2);
-        b.put("c", 1);
-        b.put("a", 1);
-        b.put("b", 2);
+        b.put("f", 2);
+        b.put("d", 1);
+        b.put("h", 1);
+        b.put("a", 2);
+        b.put("e", 3);
+        b.printInOrder();
+        int testVal = b.remove("f");
+        assertEquals(2, testVal);
+        System.out.println();
         b.printInOrder();
     }
 }
