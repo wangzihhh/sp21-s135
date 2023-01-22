@@ -1,7 +1,5 @@
 package game2048;
 
-import org.hamcrest.core.Is;
-
 import java.util.Formatter;
 import java.util.Observable;
 
@@ -111,93 +109,23 @@ public class Model extends Observable {
     public boolean tilt(Side side) {
         boolean changed;
         changed = false;
-        board.setViewingPerspective(side);
-        int total = 0;
-        int x = 0;
-        for (int i = 0; i <= 3; i += 1) {
-            x += TiltOneCol(i);
-        }
-        changed = (x > 0);
+
         // TODO: Modify this.board (and perhaps this.score) to account
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
-        board.setViewingPerspective(Side.NORTH);
+        board.setViewingPerspective(side);
+        int count = 0;
+        for (int i = 0; i < size(); i += 1) {
+            count += tiltOneCol(i);
+        }
+        changed = (count > 0);
         checkGameOver();
         if (changed) {
             setChanged();
         }
+        board.setViewingPerspective(Side.NORTH);
         return changed;
     }
-
-    /** return true if the (c, r) tile of the board is Empty, else return false; */
-    public boolean IsEmpty(int c, int r) {
-        return (this.board.tile(c, r) == null);
-    }
-
-    /** return true if (c, r+1) tile is empty*/
-    public boolean UpIsEmpty(int c, int r) {
-        if (r == 3) {
-            return false;
-        }
-        return IsEmpty(c, r+1);
-    }
-
-    /** Return the row value of place which nonempty (c,r) tile should move to
-     * when tilt north but without considering merge.
-     */
-    public int GetRowWithoutMerge(int c, int r) {
-        if (r == 3) {
-            return 3;
-        }
-        if (UpIsEmpty(c, r)) {
-            return GetRowWithoutMerge(c, r+1);
-        }
-        return r;
-    }
-
-    /** process the functionality of tilt for only one column. */
-    public int TiltOneCol(int c) {
-        int LatestMergeRow = -1;
-        int count = 0;
-        for (int i = 2; i >= 0; i -= 1) {
-            if (IsEmpty(c, i)) {
-                continue;
-            }
-            Tile t = board.tile(c,i);
-            int num = t.value();
-            if (GetRowWithoutMerge(c, i) == 3) {
-                boolean x = board.move(c, 3, t);
-                count += 1;
-                if (x) {
-                    LatestMergeRow = 3;
-                    score += board.tile(c, 3).value();
-                }
-                continue;
-            }
-            if (board.tile(c, GetRowWithoutMerge(c, i)+1).value() == num) {
-                if (LatestMergeRow != GetRowWithoutMerge(c, i) + 1) {
-                    LatestMergeRow = GetRowWithoutMerge(c, i) + 1;
-                    board.move(c, GetRowWithoutMerge(c, i)+1, t);
-                    count += 1;
-                    score += board.tile(c, GetRowWithoutMerge(c, i)+1).value();
-                    continue;
-                }
-                if (GetRowWithoutMerge(c, i) == i) {
-                    continue;
-                }
-                board.move(c, GetRowWithoutMerge(c, i), t);
-                count += 1;
-                continue;
-            }
-            if (GetRowWithoutMerge(c, i) == i) {
-                continue;
-            }
-            board.move(c, GetRowWithoutMerge(c, i), t);
-            count += 1;
-        }
-        return count;
-    }
-
 
     /** Checks if the game is over and sets the gameOver variable
      *  appropriately.
@@ -215,15 +143,16 @@ public class Model extends Observable {
      *  Empty spaces are stored as null.
      * */
     public static boolean emptySpaceExists(Board b) {
-        boolean x = false;
-        for (int i = 0; i < b.size(); i += 1) {
-            for (int j = 0; j < b.size(); j += 1) {
-                if (b.tile(i, j) == null) {
-                    x = true;
+        // Done!
+        int size = b.size();
+        for (int i = 0; i < size; i += 1) {
+            for (int j = 0; j < size; j += 1) {
+                if (isEmpty(b, i, j)) {
+                    return true;
                 }
             }
         }
-        return x;
+        return false;
     }
 
     /**
@@ -232,15 +161,19 @@ public class Model extends Observable {
      * given a Tile object t, we get its value with t.value().
      */
     public static boolean maxTileExists(Board b) {
-      boolean x = false;
-      for (int i = 0; i < b.size(); i += 1) {
-          for (int j = 0; j < b.size(); j +=1) {
-              if (b.tile(i, j) != null && b.tile(i, j).value() == MAX_PIECE) {
-                  x = true;
-              }
-          }
-      }
-      return x;
+        // Done!
+        int size = b.size();
+        for (int i = 0; i < size; i += 1) {
+            for (int j = 0; j < size; j += 1) {
+                if (isEmpty(b, i, j)) {
+                    continue;
+                }
+                if (b.tile(i, j).value() == MAX_PIECE) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -250,15 +183,12 @@ public class Model extends Observable {
      * 2. There are two adjacent tiles with the same value.
      */
     public static boolean atLeastOneMoveExists(Board b) {
-        if (emptySpaceExists(b) == true) {
+        // TODO: Fill in this function.
+        if (emptySpaceExists(b)) {
             return true;
         }
-        for (int i = 0; i < b.size(); i += 1) {
-            for (int j = 1; j < b.size(); j += 1) {
-                if (b.tile(i, j-1).value() == b.tile(i, j).value() || b.tile(j-1, i).value() == b.tile(j, i).value()) {
-                    return true;
-                }
-            }
+        if (atLeastOneMergeExists(b)){
+            return true;
         }
         return false;
     }
@@ -301,4 +231,95 @@ public class Model extends Observable {
     public int hashCode() {
         return toString().hashCode();
     }
+
+
+
+
+    // The below methods are helper functions we will use in this project
+
+    /** Returns whether the title in the specific position of given board is empty. */
+    public static boolean isEmpty(Board b, int col, int row) {
+        return b.tile(col, row) == null;
+    }
+
+    /**
+     * This method works ONLY when the board is full without empty tile !!!
+     * This static method return true if there could be a merge when we tilt
+     */
+    public static boolean atLeastOneMergeExists(Board b) {
+        int size = b.size();
+        for (int i = 0; i < size; i += 1) {
+            for (int j = 1; j < size; j += 1) {
+                if (b.tile(i, j-1).value() == b.tile(i, j).value()) {
+                    return true;
+                }
+                if (b.tile(j-1, i).value() == b.tile(j, i).value()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
+
+
+    // The following are helper methods we need
+
+    public int tiltOneCol(int col) {
+        int stateIndicator = 0;
+        int latestMergeRow = -1;
+        for (int row = 2; row >= 0; row -= 1) {
+            Tile t = board.tile(col, row);
+            int r = destiRowWithMerge(col, row, latestMergeRow);
+            if (r == row) {
+                continue;
+            }
+            stateIndicator += 1;
+            boolean mergeIndicator = board.move(col, r, t);
+            if (mergeIndicator) {
+                score += board.tile(col, r).value();
+                latestMergeRow = r;
+            }
+        }
+        return stateIndicator;
+    }
+
+
+
+    public int destiRowWithoutMerge(int col, int row) {
+        Tile t = board.tile(col, row);
+        if (t == null) {
+            return col;
+        }
+        if (row == 3) {
+            return 3;
+        }
+        for (int r = row; r <= 2; r += 1) {
+            if (board.tile(col, r + 1) != null) {
+                return r;
+            }
+        }
+        return 3;
+    }
+
+    public int destiRowWithMerge(int col, int row, int latestMergeRow) {
+        Tile t = board.tile(col, row);
+        if (t == null) {
+            return row;
+        }
+        int temp = destiRowWithoutMerge(col, row);
+        if (temp == 3) {
+            return 3;
+        }
+        if (latestMergeRow == temp + 1) {
+            return temp;
+        }
+        if (t.value() == board.tile(col, temp + 1).value()) {
+            return temp + 1;
+        }
+        return temp;
+    }
+
+
 }
