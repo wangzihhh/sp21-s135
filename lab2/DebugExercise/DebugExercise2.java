@@ -7,10 +7,13 @@ package DebugExercise;
 public class DebugExercise2 {
     /** Returns the max of a and b. Do not step into this function. */
     public static int max(int a, int b) {
+        int max;
         if (a > b) {
-            return a;
+            max = a;
+        } else {
+            max = b;
         }
-        return b;
+        return max;
     }
 
 
@@ -55,7 +58,7 @@ public class DebugExercise2 {
         int i = 0;
         int sum = 0;
         while (i < x.length) {
-            sum =  add(sum, x[i]);
+            sum = add(sum, x[i]);
             i = i + 1;
         }
         return sum;
