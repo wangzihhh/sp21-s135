@@ -1,6 +1,8 @@
 package deque;
 
-public class LinkedListDeque<T> {
+import java.util.Iterator;
+
+public class LinkedListDeque<T> implements Iterable<T>, Deque<T> {
 
     /** This is a nested class: a StuffNode with 2 pointers. */
     private class StuffNode {
@@ -97,4 +99,30 @@ public class LinkedListDeque<T> {
         }
         return p.stuff;
     }
-}
+
+
+    public Iterator<T> iterator() {
+        return new Seer();
+    }
+
+    private class Seer implements Iterator<T> {
+        int wisPos;
+
+        public Seer() {
+            wisPos = 0;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return wisPos < size;
+        }
+
+        @Override
+        public T next() {
+            T nextVal = get(wisPos);
+            wisPos += 1;
+            return nextVal;
+        }
+    }
+    }
+
