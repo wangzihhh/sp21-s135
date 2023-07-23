@@ -109,23 +109,51 @@ public class Model extends Observable {
     public boolean tilt(Side side) {
         boolean changed;
         changed = false;
+        board.setViewingPerspective(side);
 
         // TODO: Modify this.board (and perhaps this.score) to account
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
-        board.setViewingPerspective(side);
+        int size = board.size();
         int count = 0;
-        for (int i = 0; i < size(); i += 1) {
-            count += tiltOneCol(i);
+        for (int c = 0; c < size; c += 1) {
+            count += tiltHelper(c);
         }
         changed = (count > 0);
+        board.setViewingPerspective(Side.NORTH);
         checkGameOver();
         if (changed) {
             setChanged();
         }
-        board.setViewingPerspective(Side.NORTH);
         return changed;
     }
+
+
+    public int tiltHelper(int c) {
+        boolean changed = false;
+        int count = 0;
+        int size = board.size();
+        int latestMergedRow = -1;
+        for (int r = size - 1; r >= 0; r -= 1) {
+            Tile t = board.tile(c, r);
+            if (isEmpty(t)) {
+                continue;
+            }
+            int targetRow = getPos(c, r, t.value(), latestMergedRow);
+            if (r == targetRow) {
+                continue;
+            }
+            count += 1;
+            boolean indicator = board.move(c, targetRow, t);
+            if (indicator) {
+                score += board.tile(c, targetRow).value();
+                latestMergedRow = targetRow;
+            }
+        }
+        return count;
+    }
+
+
 
     /** Checks if the game is over and sets the gameOver variable
      *  appropriately.
@@ -143,16 +171,17 @@ public class Model extends Observable {
      *  Empty spaces are stored as null.
      * */
     public static boolean emptySpaceExists(Board b) {
-        // Done!
+        boolean findEmpty = false;
         int size = b.size();
         for (int i = 0; i < size; i += 1) {
             for (int j = 0; j < size; j += 1) {
-                if (isEmpty(b, i, j)) {
-                    return true;
+                if (b.tile(i, j) == null) {
+                    findEmpty = true;
+                    break;
                 }
             }
         }
-        return false;
+        return findEmpty;
     }
 
     /**
@@ -161,19 +190,21 @@ public class Model extends Observable {
      * given a Tile object t, we get its value with t.value().
      */
     public static boolean maxTileExists(Board b) {
-        // Done!
         int size = b.size();
-        for (int i = 0; i < size; i += 1) {
+        boolean findMax = false;
+        for  (int i = 0; i < size; i += 1) {
             for (int j = 0; j < size; j += 1) {
-                if (isEmpty(b, i, j)) {
+                Tile t = b.tile(i, j);
+                if (isEmpty(t)) {
                     continue;
                 }
-                if (b.tile(i, j).value() == MAX_PIECE) {
-                    return true;
+                if (t.value() == MAX_PIECE) {
+                    findMax = true;
+                    break;
                 }
             }
         }
-        return false;
+        return findMax;
     }
 
     /**
@@ -183,14 +214,11 @@ public class Model extends Observable {
      * 2. There are two adjacent tiles with the same value.
      */
     public static boolean atLeastOneMoveExists(Board b) {
-        // TODO: Fill in this function.
+        // handle for emptySpaceExist case
         if (emptySpaceExists(b)) {
             return true;
         }
-        if (atLeastOneMergeExists(b)){
-            return true;
-        }
-        return false;
+        return atLeastOneMerge(b);
     }
 
 
@@ -232,28 +260,21 @@ public class Model extends Observable {
         return toString().hashCode();
     }
 
-
-
-
-    // The below methods are helper functions we will use in this project
-
-    /** Returns whether the title in the specific position of given board is empty. */
-    public static boolean isEmpty(Board b, int col, int row) {
-        return b.tile(col, row) == null;
+    /** Return true if the given Tile object is empty one, otherwise return false. */
+    public static boolean isEmpty(Tile t) {
+        return (t == null);
     }
 
-    /**
-     * This method works ONLY when the board is full without empty tile !!!
-     * This static method return true if there could be a merge when we tilt
+    /** Assume the board has no empty space, this function
+     * return true if there exist at least two adjacent tiles with equal values
      */
-    public static boolean atLeastOneMergeExists(Board b) {
+    public static boolean atLeastOneMerge(Board b) {
         int size = b.size();
-        for (int i = 0; i < size; i += 1) {
-            for (int j = 1; j < size; j += 1) {
-                if (b.tile(i, j-1).value() == b.tile(i, j).value()) {
-                    return true;
-                }
-                if (b.tile(j-1, i).value() == b.tile(j, i).value()) {
+        for (int i = 0; i < size - 1; i += 1) {
+            for (int j = 0; j < size; j += 1) {
+                boolean indicator1 = (b.tile(i, j).value() == b.tile(i + 1, j).value());
+                boolean indicator2 = (b.tile(j, i).value() == b.tile(j, i + 1).value());
+                if ((indicator1 || indicator2)) {
                     return true;
                 }
             }
@@ -261,65 +282,24 @@ public class Model extends Observable {
         return false;
     }
 
-
-
-
-    // The following are helper methods we need
-
-    public int tiltOneCol(int col) {
-        int stateIndicator = 0;
-        int latestMergeRow = -1;
-        for (int row = 2; row >= 0; row -= 1) {
-            Tile t = board.tile(col, row);
-            int r = destiRowWithMerge(col, row, latestMergeRow);
-            if (r == row) {
-                continue;
-            }
-            stateIndicator += 1;
-            boolean mergeIndicator = board.move(col, r, t);
-            if (mergeIndicator) {
-                score += board.tile(col, r).value();
-                latestMergeRow = r;
-            }
+    public int getPos(int c, int r, int val, int latestMergeRow) {
+        int size = board.size();
+        if (r == size - 1) {
+            return size - 1;
         }
-        return stateIndicator;
+        Tile t = board.tile(c, r + 1);
+        if (isEmpty(t)) {
+            return getPos(c, r + 1, val, latestMergeRow);
+        }
+        int peek = t.value();
+        if (val != peek) {
+            return r;
+        }
+        else if (latestMergeRow == r + 1) {
+            return r;
+        }
+        else {
+            return r + 1;
+        }
     }
-
-
-
-    public int destiRowWithoutMerge(int col, int row) {
-        Tile t = board.tile(col, row);
-        if (t == null) {
-            return col;
-        }
-        if (row == 3) {
-            return 3;
-        }
-        for (int r = row; r <= 2; r += 1) {
-            if (board.tile(col, r + 1) != null) {
-                return r;
-            }
-        }
-        return 3;
-    }
-
-    public int destiRowWithMerge(int col, int row, int latestMergeRow) {
-        Tile t = board.tile(col, row);
-        if (t == null) {
-            return row;
-        }
-        int temp = destiRowWithoutMerge(col, row);
-        if (temp == 3) {
-            return 3;
-        }
-        if (latestMergeRow == temp + 1) {
-            return temp;
-        }
-        if (t.value() == board.tile(col, temp + 1).value()) {
-            return temp + 1;
-        }
-        return temp;
-    }
-
-
 }
