@@ -109,51 +109,17 @@ public class Model extends Observable {
     public boolean tilt(Side side) {
         boolean changed;
         changed = false;
-        board.setViewingPerspective(side);
 
         // TODO: Modify this.board (and perhaps this.score) to account
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
-        int size = board.size();
-        int count = 0;
-        for (int c = 0; c < size; c += 1) {
-            count += tiltHelper(c);
-        }
-        changed = (count > 0);
-        board.setViewingPerspective(Side.NORTH);
+
         checkGameOver();
         if (changed) {
             setChanged();
         }
         return changed;
     }
-
-
-    public int tiltHelper(int c) {
-        boolean changed = false;
-        int count = 0;
-        int size = board.size();
-        int latestMergedRow = -1;
-        for (int r = size - 1; r >= 0; r -= 1) {
-            Tile t = board.tile(c, r);
-            if (isEmpty(t)) {
-                continue;
-            }
-            int targetRow = getPos(c, r, t.value(), latestMergedRow);
-            if (r == targetRow) {
-                continue;
-            }
-            count += 1;
-            boolean indicator = board.move(c, targetRow, t);
-            if (indicator) {
-                score += board.tile(c, targetRow).value();
-                latestMergedRow = targetRow;
-            }
-        }
-        return count;
-    }
-
-
 
     /** Checks if the game is over and sets the gameOver variable
      *  appropriately.
@@ -171,17 +137,8 @@ public class Model extends Observable {
      *  Empty spaces are stored as null.
      * */
     public static boolean emptySpaceExists(Board b) {
-        boolean findEmpty = false;
-        int size = b.size();
-        for (int i = 0; i < size; i += 1) {
-            for (int j = 0; j < size; j += 1) {
-                if (b.tile(i, j) == null) {
-                    findEmpty = true;
-                    break;
-                }
-            }
-        }
-        return findEmpty;
+        // TODO: Fill in this function.
+        return false;
     }
 
     /**
@@ -190,21 +147,8 @@ public class Model extends Observable {
      * given a Tile object t, we get its value with t.value().
      */
     public static boolean maxTileExists(Board b) {
-        int size = b.size();
-        boolean findMax = false;
-        for  (int i = 0; i < size; i += 1) {
-            for (int j = 0; j < size; j += 1) {
-                Tile t = b.tile(i, j);
-                if (isEmpty(t)) {
-                    continue;
-                }
-                if (t.value() == MAX_PIECE) {
-                    findMax = true;
-                    break;
-                }
-            }
-        }
-        return findMax;
+        // TODO: Fill in this function.
+        return false;
     }
 
     /**
@@ -214,11 +158,8 @@ public class Model extends Observable {
      * 2. There are two adjacent tiles with the same value.
      */
     public static boolean atLeastOneMoveExists(Board b) {
-        // handle for emptySpaceExist case
-        if (emptySpaceExists(b)) {
-            return true;
-        }
-        return atLeastOneMerge(b);
+        // TODO: Fill in this function.
+        return false;
     }
 
 
@@ -258,48 +199,5 @@ public class Model extends Observable {
     /** Returns hash code of Model’s string. */
     public int hashCode() {
         return toString().hashCode();
-    }
-
-    /** Return true if the given Tile object is empty one, otherwise return false. */
-    public static boolean isEmpty(Tile t) {
-        return (t == null);
-    }
-
-    /** Assume the board has no empty space, this function
-     * return true if there exist at least two adjacent tiles with equal values
-     */
-    public static boolean atLeastOneMerge(Board b) {
-        int size = b.size();
-        for (int i = 0; i < size - 1; i += 1) {
-            for (int j = 0; j < size; j += 1) {
-                boolean indicator1 = (b.tile(i, j).value() == b.tile(i + 1, j).value());
-                boolean indicator2 = (b.tile(j, i).value() == b.tile(j, i + 1).value());
-                if ((indicator1 || indicator2)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    public int getPos(int c, int r, int val, int latestMergeRow) {
-        int size = board.size();
-        if (r == size - 1) {
-            return size - 1;
-        }
-        Tile t = board.tile(c, r + 1);
-        if (isEmpty(t)) {
-            return getPos(c, r + 1, val, latestMergeRow);
-        }
-        int peek = t.value();
-        if (val != peek) {
-            return r;
-        }
-        else if (latestMergeRow == r + 1) {
-            return r;
-        }
-        else {
-            return r + 1;
-        }
     }
 }
