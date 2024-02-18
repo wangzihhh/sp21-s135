@@ -109,17 +109,26 @@ public class Model extends Observable {
     public boolean tilt(Side side) {
         boolean changed;
         changed = false;
-
         // TODO: Modify this.board (and perhaps this.score) to account
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
-
+        board.setViewingPerspective(side);
+        int size = board.size();
+        int cnt = 0;
+        for (int c = 0; c < size; c += 1) {
+            int unit_tilt = tilt_helper(c);
+            cnt += unit_tilt;
+        }
+        board.setViewingPerspective(Side.NORTH);
+        changed = cnt > 0;
         checkGameOver();
         if (changed) {
             setChanged();
         }
         return changed;
     }
+
+
 
     /** Checks if the game is over and sets the gameOver variable
      *  appropriately.
@@ -137,7 +146,18 @@ public class Model extends Observable {
      *  Empty spaces are stored as null.
      * */
     public static boolean emptySpaceExists(Board b) {
-        // TODO: Fill in this function.
+        boolean result = false;
+        int size = b.size();
+        /** Iterate rows of the board. */
+        for (int r = 0; r < size; r += 1) {
+            /** Iterate columns of the board. */
+            for (int c = 0; c < size; c += 1) {
+                Tile cur_Tile = b.tile(c, r);
+                if (isEmpty(cur_Tile)) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -147,7 +167,20 @@ public class Model extends Observable {
      * given a Tile object t, we get its value with t.value().
      */
     public static boolean maxTileExists(Board b) {
-        // TODO: Fill in this function.
+        /** Iterate the rows. */
+        for (int r = 0; r < b.size(); r += 1) {
+            /** Iterate the columns. */
+            for (int c = 0; c < b.size(); c += 1) {
+                Tile cur_Tile = b.tile(c, r);
+                if (isEmpty(cur_Tile)) {
+                    continue;
+                }
+                int val = cur_Tile.value();
+                if (val == MAX_PIECE) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -158,8 +191,8 @@ public class Model extends Observable {
      * 2. There are two adjacent tiles with the same value.
      */
     public static boolean atLeastOneMoveExists(Board b) {
-        // TODO: Fill in this function.
-        return false;
+        return emptySpaceExists(b) || adjacentEquals(b);
+
     }
 
 
@@ -200,4 +233,88 @@ public class Model extends Observable {
     public int hashCode() {
         return toString().hashCode();
     }
-}
+
+    /** Return true if tile is empty. */
+    public static boolean isEmpty(Tile tile) {
+        return tile == null;
+    }
+
+    /** Return true if there are two adjacent tiles with the same value, with the assumption
+     *  that all the tiles in the board are not empty
+     */
+    public static boolean adjacentEquals(Board b) {
+        /** handle the case for left right equals. */
+        for (int r = 0; r < b.size(); r += 1) {
+            for (int c = 0; c < b.size() - 1; c += 1) {
+                if (b.tile(c, r).value() == b.tile(c + 1, r).value()) {
+                    return true;
+                }
+            }
+        }
+        /** handle the case for up down equals. */
+        for (int r = 0; r < b.size() - 1; r += 1) {
+            for (int c = 0; c < b.size(); c += 1) {
+                if (b.tile(c, r).value() == b.tile(c, r + 1).value()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**This method return the row number to which (c,r) piece will tilt in up direction
+     * when merging is not considered. */
+    public int simpleTiltPos(int c, int r) {
+        int size = board.size();
+        if (r == size - 1) {
+            return (size - 1);
+        }
+        if (isEmpty(board.tile(c, r + 1))) {
+            return simpleTiltPos(c, r + 1);
+        }
+        return r;
+    }
+
+    /** This method return the row number to which (c,r) piece will tilt to in up direction
+     *  when merging is considered. */
+    public int complexTiltPos(int c, int r, int merged_recorder) {
+        int initial_guess = simpleTiltPos(c, r);
+        if (initial_guess == board.size() - 1) {
+            return initial_guess;
+        }
+        int cur_val = board.tile(c, r).value();
+        int cmp_val = board.tile(c, initial_guess + 1).value();
+        if (cur_val == cmp_val) {
+            if (merged_recorder == initial_guess + 1) {
+                return initial_guess;
+            }
+            return initial_guess + 1;
+        }
+        return initial_guess;
+    }
+
+    /** This method apply tilt functionality in a specific column in the board.  */
+    public int tilt_helper(int c) {
+        int merged_recorder = -1;
+        int size = board.size();
+        int changed_indicator = 0;
+        for (int r = size - 1; r >= 0; r -= 1) {
+            Tile t = board.tile(c, r);
+            if (isEmpty(t)) {
+                continue;
+            }
+            int destination = complexTiltPos(c, r, merged_recorder);
+            if (destination == r) {
+                continue;
+            }
+            changed_indicator += 1;
+            boolean move = board.move(c, destination, t);
+            if (move) {
+                score += board.tile(c, destination).value();
+                merged_recorder = destination;
+            }
+        }
+        return changed_indicator;
+    }
+    }
+
